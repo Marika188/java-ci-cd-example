@@ -1,0 +1,44 @@
+name: Java CI/CD Pipeline
+
+# Триггер для запуска workflow
+on:
+  push:
+    branches:
+      - main  # Запускать при пуше в ветку main
+  pull_request:
+    branches:
+      - main  # Запускать при создании pull request в ветку main
+
+jobs:
+  build:
+    # Указываем, что эта работа будет выполняться на Ubuntu (можно также использовать Windows или Mac)
+    runs-on: ubuntu-latest
+
+    steps:
+      # Шаг 1: Клонируем репозиторий
+      - name: Checkout repository
+        uses: actions/checkout@v3  # Используем официальную GitHub Action для клонирования репозитория
+
+      # Шаг 2: Настроим Java (JDK 17)
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'  # Указываем версию JDK для нашего проекта
+
+      # Шаг 3: Компиляция проекта с помощью javac
+      - name: Build with javac
+        run: |
+          javac src/com/example/App.java  # Компиляция основного кода
+          javac src/test/java/com/example/AppTest.java  # Компиляция тестов
+
+      # Шаг 4: Запуск тестов с помощью JUnit
+      - name: Run tests
+        run: |
+          java -cp "src" org.junit.runner.JUnitCore com.example.AppTest  # Запуск тестов с помощью JUnit
+
+      # Шаг 5: Деплой приложения (пример деплоя)
+      - name: Deploy to server
+        run: |
+          echo "Deploying application..."
+          # Добавьте команду для деплоя вашего приложения (например, SCP, Heroku CLI и т.д.)
+
