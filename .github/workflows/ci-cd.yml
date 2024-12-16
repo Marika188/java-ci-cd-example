@@ -24,7 +24,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '17'  # Указываем версию JDK для нашего проекта
-
+          distribution: 'temurin'
       # Шаг 3: Компиляция проекта с помощью javac
       - name: Build with javac
         run: |
