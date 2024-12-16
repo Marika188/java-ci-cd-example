@@ -26,19 +26,27 @@ jobs:
           java-version: '17'  # Указываем версию JDK для нашего проекта
           distribution: 'temurin'
       # Шаг 3: Компиляция проекта с помощью javac
-      - name: Build with javac
-        run: |
-          javac src/main/java/com/example/App.java  # Компиляция основного кода
-          javac src/test/java/com/example/AppTest.java  # Компиляция тестов
+#      - name: Build with javac
+ #       run: |
+  #        javac src/main/java/com/example/App.java  # Компиляция основного кода
+   #       javac src/test/java/com/example/AppTest.java  # Компиляция тестов
 
       # Шаг 4: Запуск тестов с помощью JUnit
-      - name: Run tests
-        run: |
-          java -cp "src/main/java" org.junit.runner.JUnitCore com.example.AppTest  # Запуск тестов с помощью JUnit
+#      - name: Run tests
+#        run: |
+#          java -cp "src/main/java" org.junit.runner.JUnitCore com.example.AppTest  # Запуск тестов с помощью JUnit
 
       # Шаг 5: Деплой приложения (пример деплоя)
-      - name: Deploy to server
-        run: |
-          echo "Deploying application..."
+#      - name: Deploy to server
+#        run: |
+#          echo "Deploying application..."
           # Добавьте команду для деплоя вашего приложения (например, SCP, Heroku CLI и т.д.)
+       - name: Run build and tests
+         run: |
+        # Устанавливаем зависимость JUnit
+            mkdir -p lib
+            curl -L -o lib/junit-platform-console-standalone-1.10.0.jar https://repo1.maven.org/maven2/org/junit/platform/junit-platform-console-standalone/1.10.0/junit-platform-console-standalone-1.10.0.jar
 
+        # Запуск вашего build.bat
+            chmod +x build.bat
+            ./build.bat
