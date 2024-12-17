@@ -22,22 +22,35 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          java-version: '17'  # Указываем, что хотим использовать JDK 17
-          distribution: 'temurin'  # Указываем, что используем темпоральный JDK
+          java-version: '17'
+          distribution: 'temurin'
 
       # Шаг 3: Устанавливаем зависимость JUnit
       - name: Install JUnit dependency
         run: |
-          mkdir -p lib  # Создаем папку для библиотек
+          mkdir -p lib
           curl -L -o lib/junit-platform-console-standalone-1.10.0.jar https://repo1.maven.org/maven2/org/junit/platform/junit-platform-console-standalone/1.10.0/junit-platform-console-standalone-1.10.0.jar
 
-      # Шаг 4: Сборка и запуск тестов с помощью javac
+      # Шаг 4: Сборка и тестирование проекта
       - name: Build and Test with javac
         run: |
-          # Компилируем основной код и тесты
           javac -cp "lib/junit-platform-console-standalone-1.10.0.jar:src/main/java" src/main/java/com/example/App.java src/test/java/com/example/AppTest.java
+          java -cp "lib/junit-platform-console-standalone-1.10.0.jar:src/main/java" org.junit.platform.console.ConsoleLauncher --scan-class-path
 
-          # Запускаем тесты с использованием JUnit
-          java -cp "lib/junit-platform-console-standalone-1.10.0.jar:src/main/java" org.junit.platform.console.ConsoleLauncher --scan-classpath
+      # Шаг 5: Логин в Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}  # Ваш логин в Docker Hub из Secrets
+          password: ${{ secrets.DOCKER_PASSWORD }}  # Ваш пароль из Secrets
 
+      # Шаг 6: Сборка Docker-образа
+      - name: Build Docker Image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/java-app:latest .
+
+      # Шаг 7: Публикация Docker-образа на Docker Hub
+      - name: Push Docker Image to Docker Hub
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/java-app:latest
 
