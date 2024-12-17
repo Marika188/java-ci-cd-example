@@ -26,10 +26,10 @@ jobs:
 
       # Шаг 3: Устанавливаем зависимость JUnit
       - name: Install JUnit dependency
-       run: |
-         mkdir lib || true
-         curl -L -o lib/junit-platform-console-standalone-1.10.0.jar https://repo1.maven.org/maven2/org/junit/platform/junit-platform-console-standalone/1.10.0/junit-platform-console-standalone-1.10.0.jar
-       shell: bash
+        run: |
+          mkdir lib || true
+          curl -L -o lib/junit-platform-console-standalone-1.10.0.jar https://repo1.maven.org/maven2/org/junit/platform/junit-platform-console-standalone/1.10.0/junit-platform-console-standalone-1.10.0.jar
+        shell: bash
 
       # Шаг 4: Сборка и тестирование проекта
       - name: Build and Test with javac
