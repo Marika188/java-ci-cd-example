@@ -10,9 +10,8 @@ on:
       - main  # Запускать при создании pull request в ветку main
 
 jobs:
-  build:
-    runs-on: ubuntu-latest  # Работаем на Ubuntu
-
+  build-linux:
+    runs-on: ubuntu-latest  # Запускаем на Linux (Ubuntu)
     steps:
       # Шаг 1: Клонируем репозиторий
       - name: Checkout repository
@@ -37,19 +36,105 @@ jobs:
           javac -cp "lib/junit-platform-console-standalone-1.10.0.jar:src/main/java" src/main/java/com/example/App.java src/test/java/com/example/AppTest.java
           java -cp "lib/junit-platform-console-standalone-1.10.0.jar:src/main/java" org.junit.platform.console.ConsoleLauncher --scan-class-path
 
-      # Шаг 5: Логин в Docker Hub
+  build-windows:
+    runs-on: windows-latest  # Запускаем на Windows
+    steps:
+      # Шаг 1: Клонируем репозиторий
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Шаг 2: Настроим Java (JDK 17)
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # Шаг 3: Устанавливаем зависимость JUnit
+      - name: Install JUnit dependency
+        run: |
+          mkdir -p lib
+          curl -L -o lib/junit-platform-console-standalone-1.10.0.jar https://repo1.maven.org/maven2/org/junit/platform/junit-platform-console-standalone/1.10.0/junit-platform-console-standalone-1.10.0.jar
+
+      # Шаг 4: Сборка и тестирование проекта
+      - name: Build and Test with javac
+        run: |
+          javac -cp "lib/junit-platform-console-standalone-1.10.0.jar;src/main/java" src/main/java/com/example/App.java src/test/java/com/example/AppTest.java
+          java -cp "lib/junit-platform-console-standalone-1.10.0.jar;src/main/java" org.junit.platform.console.ConsoleLauncher --scan-class-path
+
+  build-macos-intel:
+    runs-on: macos-latest  # Запускаем на macOS с процессором Intel
+    steps:
+      # Шаг 1: Клонируем репозиторий
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Шаг 2: Настроим Java (JDK 17)
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # Шаг 3: Устанавливаем зависимость JUnit
+      - name: Install JUnit dependency
+        run: |
+          mkdir -p lib
+          curl -L -o lib/junit-platform-console-standalone-1.10.0.jar https://repo1.maven.org/maven2/org/junit/platform/junit-platform-console-standalone/1.10.0/junit-platform-console-standalone-1.10.0.jar
+
+      # Шаг 4: Сборка и тестирование проекта
+      - name: Build and Test with javac
+        run: |
+          javac -cp "lib/junit-platform-console-standalone-1.10.0.jar:src/main/java" src/main/java/com/example/App.java src/test/java/com/example/AppTest.java
+          java -cp "lib/junit-platform-console-standalone-1.10.0.jar:src/main/java" org.junit.platform.console.ConsoleLauncher --scan-class-path
+
+  build-macos-apple-silicon:
+    runs-on: macos-11  # Запускаем на macOS для Apple Silicon
+    steps:
+      # Шаг 1: Клонируем репозиторий
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Шаг 2: Настроим Java (JDK 17)
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # Шаг 3: Устанавливаем зависимость JUnit
+      - name: Install JUnit dependency
+        run: |
+          mkdir -p lib
+          curl -L -o lib/junit-platform-console-standalone-1.10.0.jar https://repo1.maven.org/maven2/org/junit/platform/junit-platform-console-standalone/1.10.0/junit-platform-console-standalone-1.10.0.jar
+
+      # Шаг 4: Сборка и тестирование проекта
+      - name: Build and Test with javac
+        run: |
+          javac -cp "lib/junit-platform-console-standalone-1.10.0.jar:src/main/java" src/main/java/com/example/App.java src/test/java/com/example/AppTest.java
+          java -cp "lib/junit-platform-console-standalone-1.10.0.jar:src/main/java" org.junit.platform.console.ConsoleLauncher --scan-class-path
+
+  docker-build-push:
+    needs: [build-linux, build-windows, build-macos-intel, build-macos-apple-silicon]  # Ожидаем завершения всех джоб
+    runs-on: ubuntu-latest
+    steps:
+      # Шаг 1: Клонируем репозиторий
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Шаг 2: Логин в Docker Hub
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}  # Ваш логин в Docker Hub из Secrets
-          password: ${{ secrets.DOCKER_TOKEN }}  # Ваш пароль из Secrets
+          username: ${{ secrets.DOCKER_USERNAME }}  # Логин в Docker Hub из Secrets
+          password: ${{ secrets.DOCKER_TOKEN }}  # Токен Docker Hub из Secrets
 
-      # Шаг 6: Сборка Docker-образа
+      # Шаг 3: Сборка Docker-образа
       - name: Build Docker Image
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/java-app:latest .
 
-      # Шаг 7: Публикация Docker-образа на Docker Hub
+      # Шаг 4: Публикация Docker-образа на Docker Hub
       - name: Push Docker Image to Docker Hub
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/java-app:latest
