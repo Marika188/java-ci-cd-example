@@ -42,7 +42,7 @@ jobs:
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}  # Ваш логин в Docker Hub из Secrets
-          password: ${{ secrets.DOCKER_PASSWORD }}  # Ваш пароль из Secrets
+          password: ${{ secrets.DOCKER_TOKEN }}  # Ваш пароль из Secrets
 
       # Шаг 6: Сборка Docker-образа
       - name: Build Docker Image
