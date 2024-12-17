@@ -99,9 +99,9 @@ jobs:
  #         javac -cp "lib/junit-platform-console-standalone-1.10.0.jar:src/main/java" src/main/java/com/example/App.java src/test/java/com/example/AppTest.java
  #         java -cp "lib/junit-platform-console-standalone-1.10.0.jar:src/main/java" org.junit.platform.console.ConsoleLauncher --scan-class-path
 
-       - name: Build application
-         run: |
-           echo "Building on macOS-latest"
+      - name: Build application
+        run: |
+          echo "Building on macOS-latest"
   docker-build-push:
     needs: [build-linux, build-windows, build-macos-intel, build-macos-apple-silicon] # boild
     runs-on: ubuntu-latest
